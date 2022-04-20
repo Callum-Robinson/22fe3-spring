@@ -87,8 +87,24 @@ public class UserController {
 	}
 	
 	@DeleteMapping(path = "/{id}")
-	public User deleteUser(@PathVariable(name = "id") int id) {
-		// TODO: Using your implementation of 'deleteUser', improve your existing solution by using the ResponseEntity class
-		return null;
+	public ResponseEntity<User> deleteUser(@PathVariable(name = "id") int id) {
+		// Get the user
+		User user = null;
+		for (int i = 0; i < users.size(); i++) {
+			if (this.users.get(i).getId() == id) {
+				user = this.users.get(i);
+			}
+			
+			// when user not null (i.e. user found) then remove the user and send an OK response
+			if (user != null) {
+				users.remove(i);
+				return new ResponseEntity<User>(user, HttpStatus.OK);
+			}
+		}
+				
+		
+		
+		// Return 404 if user not found
+		return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 	}
 }
