@@ -49,6 +49,7 @@ public class UserController {
 //		return user;
 	}
 	
+	
 	// POST
 	@PostMapping // indicates POST requests are accepted at localhost:8080/user
 	public User createUser(@RequestBody User user) {
@@ -59,12 +60,14 @@ public class UserController {
 		return user;
 	}
 	
+	
 	// PUT
 	@PutMapping(path = "/{id}")
 	public User updateUser(@RequestBody User user, @PathVariable(name = "id") int id) {
 		// TODO: Implement me
 		return null;
 	}
+	
 	
 	// DELETE
 	@DeleteMapping(path = "/{id}")
