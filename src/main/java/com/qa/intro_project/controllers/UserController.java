@@ -73,7 +73,18 @@ public class UserController {
 	// DELETE
 	@DeleteMapping(path = "/{id}")
 	public User deleteUser(@PathVariable(name = "id") int id) {
-		// Your implementation here
-		return null;
+		// Get the user
+		User user = null;
+		for (int i = 0; i < users.size(); i++) {
+			if (this.users.get(i).getId() == id) {
+				user = this.users.get(i);
+			}
+		}
+				
+		// Remove the selected user
+		users.remove(id);
+				
+		// Return the removed user
+		return user;
 	}
 }
