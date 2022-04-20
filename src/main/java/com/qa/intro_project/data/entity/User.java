@@ -1,13 +1,10 @@
 package com.qa.intro_project.data.entity;
 
-import java.sql.Date;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 
 // Spring has a 'spring-boot-starter-validation' module which transitively includes
@@ -43,12 +40,6 @@ public class User {
 	private String email;
 	
 	@NotNull
-	@NotBlank
-	@PastOrPresent
-	private Date userSince;
-	
-	@NotNull
-	@NotBlank
 	@Min(18)
 	@Max(120)
 	private Integer age;
@@ -78,6 +69,23 @@ public class User {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
 	}
 
 	@Override
