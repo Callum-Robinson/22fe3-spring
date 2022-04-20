@@ -68,9 +68,22 @@ public class UserController {
 	}
 	
 	@PutMapping(path = "/{id}")
-	public User updateUser(@RequestBody User user, @PathVariable(name = "id") int id) {
-		// TODO: Using your implementation of 'updateUser', improve your existing solution by using the ResponseEntity class
-		return null;
+	public ResponseEntity<User> updateUser(@Valid @RequestBody User user, @PathVariable(name = "id") int id) {
+		// Get the user from the list
+		User savedUser = null;
+		for (int i = 0; i < users.size(); i++) {
+			if (this.users.get(i).getId() == id) {
+				savedUser = this.users.get(i);
+			}
+		}
+		// Update that user and return an OK
+		if (savedUser != null) {
+			savedUser.setUsername(user.getUsername());
+			return new ResponseEntity<User>(savedUser, HttpStatus.OK);
+		}
+				
+		// Return 404 if not found
+		return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 	}
 	
 	@DeleteMapping(path = "/{id}")
