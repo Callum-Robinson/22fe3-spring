@@ -73,8 +73,15 @@ public class UserController {
 	}
 	
 	@DeleteMapping(path = "/{id}")
-	public User deleteUser(@PathVariable(name = "id") int id) {
-		// TODO: Implement the delete user functionality using the user repository
-		return null;
+	public ResponseEntity<User> deleteUser(@PathVariable(name = "id") int id) {
+		//Implement the delete user functionality using the user repository
+		Optional<User> user = userRepository.findById(id);
+		
+		if (user.isPresent()) {
+			User deletedUser = user.get();
+			userRepository.delete(deletedUser);
+			return new ResponseEntity<User>(deletedUser, HttpStatus.OK);
+		}
+		return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 	}
 }
