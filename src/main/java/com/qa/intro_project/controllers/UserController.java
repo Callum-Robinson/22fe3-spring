@@ -90,11 +90,10 @@ public class UserController {
 		
 		// check if user exists
 		if (user.isPresent()) {
-			User deletedUser = user.get();
 			// delete the user
-			userRepository.delete(deletedUser);
+			userRepository.deleteById(id);
 			// return the deleted user and OK response
-			return new ResponseEntity<User>(deletedUser, HttpStatus.OK);
+			return new ResponseEntity<User>(user.get(), HttpStatus.OK);
 		}
 		// user not found
 		return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
