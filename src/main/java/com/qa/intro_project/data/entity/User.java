@@ -44,6 +44,10 @@ public class User {
 	@Max(120)
 	private Integer age;
 	
+	@NotNull
+	@NotBlank
+	private String address;
+	
 	
 	public User() {
 		
@@ -86,6 +90,14 @@ public class User {
 
 	public void setAge(Integer age) {
 		this.age = age;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	@Override
