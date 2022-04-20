@@ -53,9 +53,21 @@ public class UserController {
 	
 	// PUT
 	@PutMapping(path = "/{id}")
-	public User updateUser(@RequestBody User user, @PathVariable(name = "id") int id) {
-		// TODO: In your implementation, ensure @Valid is called on the request body before updating
-		return null;
+	public User updateUser(@Valid @RequestBody User user, @PathVariable(name = "id") int id) {
+		// Get the user from the list
+		User savedUser = null;
+		for (int i = 0; i < users.size(); i++) {
+			if (this.users.get(i).getId() == id) {
+				savedUser = this.users.get(i);
+			}
+		}
+		// Update that user
+		if (savedUser != null) {
+			savedUser.setUsername(user.getUsername());
+		}
+				
+		// Return the updated user
+		return savedUser;
 	}
 	
 	// DELETE
