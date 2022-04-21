@@ -1,8 +1,14 @@
 package com.qa.intro_project.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,89 +19,67 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.qa.intro_project.data.entity.User;
+import com.qa.intro_project.data.entity.UserProfile;
+import com.qa.intro_project.data.repository.UserProfileRepository;
+import com.qa.intro_project.data.repository.UserRepository;
 
 @RestController
 @RequestMapping(path = "/user") // accepts requests at localhost:8080/user
 public class UserController {
-
-	// the list of users is just pretending to be a database for now
-	private static int COUNTER = 1;
-	private List<User> users = new ArrayList<>(List.of(new User(COUNTER++, "Fred"), new User(COUNTER++, "Sarah")));
 	
-	// GET
+	private UserRepository userRepository;
+	private UserProfileRepository userProfileRepository;
+	
+	@Autowired // Instructs the Spring IoC container to inject the required dependency
+	public UserController(UserRepository userRepository, UserProfileRepository userProfileRepository) {
+		this.userRepository = userRepository;
+		this.userProfileRepository = userProfileRepository;
+	}
+	
 	@GetMapping
-	public List<User> getUsers() {
-		return users;
+	public ResponseEntity<List<User>> getUsers() {
+		return ResponseEntity.ok(userRepository.findAll());
 	}
 	
-	// GET by id
-	// - specify a variable in a path by surrounding it in curly braces
-	@GetMapping(path = "/{id}") // localhost:8080/user/3
-	public User getUser(@PathVariable(name = "id") int id) {
-		// we need to get the id out of the path, this can be done with the @PathVariable annotation
-		// - the 'name' attribute takes the name of the path variable
-		// - this then gets the path variable from the path and inserts it into the parameter 'int id'
-		for (int i = 0; i < users.size(); i++) {
-			if (this.users.get(i).getId() == id) {
-				return this.users.get(i);
-			}
-		}
-		return null; // we should return a 404 not found response code
+	@GetMapping(path = "/{id}")
+	public ResponseEntity<User> getUser(@PathVariable(name = "id") int id) {
+		Optional<User> user = userRepository.findById(id);
 		
-//		User user = users.stream()
-//						  .filter(u -> u.getId() == id)
-//						  .findFirst()
-//						  .orElse(null);
-//		return user;
+		if (user.isPresent()) {
+			return new ResponseEntity<User>(user.get(), HttpStatus.OK);
+		}
+		return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 	}
 	
-	
-	// POST
-	@PostMapping // indicates POST requests are accepted at localhost:8080/user
-	public User createUser(@RequestBody User user) {
-		// @RequestBody tells Spring to retrieve the data in the requests body and then create an instance
-		// of User (using the default empty constructor) and then calls its mutators (setters) to set its values
-		user.setId(COUNTER++);
-		users.add(user);
-		return user;
+
+	@PostMapping
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+		UserProfile profile = user.getUserProfile();
+		user.setUserProfile(null);
+		
+		User newUser = userRepository.save(user);
+		
+		if (profile != null) {
+			profile.setUser(newUser);
+			profile = userProfileRepository.save(profile);
+		}
+		newUser.setUserProfile(profile);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Location", "http://localhost:8080/user/" + newUser.getId());
+
+		return new ResponseEntity<User>(newUser, headers, HttpStatus.CREATED);
 	}
 	
-	
-	// PUT
 	@PutMapping(path = "/{id}")
-	public User updateUser(@RequestBody User user, @PathVariable(name = "id") int id) {
-		// Get the user from the list
-		User savedUser = null;
-		for (int i = 0; i < users.size(); i++) {
-			if (this.users.get(i).getId() == id) {
-				savedUser = this.users.get(i);
-			}
-		}
-		// Update that user
-		if (savedUser != null) {
-			savedUser.setUsername(user.getUsername());
-		}
-		
-		// Return the updated user
-		return savedUser;
+	public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable(name = "id") int id) {
+		// TODO: Put your implementation here
+		return null;
 	}
 	
-	
-	// DELETE
 	@DeleteMapping(path = "/{id}")
-	public User deleteUser(@PathVariable(name = "id") int id) {
-		// Get the user
-		User user = null;
-		for (int i = 0; i < users.size(); i++) {
-			if (this.users.get(i).getId() == id) {
-				user = this.users.get(i);
-			}
-		}
-		
-		// Remove the selected user
-		users.remove(id);
-		
-		// Return the removed user
-		return user;
+	public ResponseEntity<?> deleteUser(@PathVariable(name = "id") int id) {
+		// TODO: Put your implementation here
+		return null;
 	}
 }
